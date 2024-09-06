@@ -4,6 +4,7 @@
 #include<unordered_map>
 #include "Session.hpp"
 #include <unordered_set>
+#include "ClientRequestHandler.hpp"
 class SessionManager {
 private:
 	std::unordered_set<int> usedSessionId;
@@ -12,6 +13,8 @@ private:
 public:
 	void addSession(std::unique_ptr<boost::asio::ip::tcp::socket> socketptr);
 	void removeSession(int sessionId);
+	friend  void ClientRequestHandler::handleRequest(const std::string& message);
+
 
 
 

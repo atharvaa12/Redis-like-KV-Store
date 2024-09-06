@@ -6,6 +6,7 @@ class Session {
 private:
 	std::unique_ptr<boost::asio::ip::tcp::socket> socketptr;
 	boost::asio::streambuf sessionBuffer;
+	boost::asio::streambuf writeBuffer;
 	int sessionId;
 
 public:
@@ -15,6 +16,7 @@ public:
 	};
 	void sendToClient(std::string message);
 	void getLineFromClient();
+	void sendToClientSync(std::string message);
 
 
 
