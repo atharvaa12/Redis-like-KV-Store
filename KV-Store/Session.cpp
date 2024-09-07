@@ -1,6 +1,15 @@
 #include "Session.hpp"
 #include<iostream>
 #include "ClientRequestHandler.hpp"
+#include "SessionManager.hpp"
+class ClientRequestHandler;
+void Session::killSession()
+{
+	sendToClientSync("Connection closed by server");
+	socketptr->cancel();
+	socketptr->close();
+	sessionManager.removeSession(sessionId);
+}
 void Session::sendToClient(std::string message)
 {
 	writeBuffer.consume(writeBuffer.size());
@@ -41,18 +50,25 @@ void  Session::getLineFromClient()
 			// Check if the message is empty
 			if (message.empty()) {
 				std::cerr << "Received empty or whitespace-only message" << std::endl;
+			
+			}
+			else if (message == "q") {
+				killSession();
+				return;
 			}
 			else {
 				std::cout << "Received message: " << message << " (size: " << message.size() << ")" << std::endl;
 				ClientRequestHandler crh(*this, sessionId);
 				crh.handleRequest(message);
+				
 			}
-
-
-
-
-
 			getLineFromClient();
+
+
+
+
+
+			
 
 		}
 		else {
@@ -64,6 +80,7 @@ void  Session::getLineFromClient()
 	
 	);
 }
+
 
 void Session::sendToClientSync(std::string message)
 {

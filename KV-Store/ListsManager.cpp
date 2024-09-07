@@ -1,5 +1,18 @@
 #include "ListsManager.hpp"
 std::unordered_map<std::string, std::unique_ptr<std::list<std::string>>> ListsManager::lists;
+std::unordered_map<std::string, std::chrono::steady_clock::time_point> ListsManager::ttlMap;
+void ListsManager::ttlCheck(const std::string& key)
+{
+	auto now = std::chrono::steady_clock::now();
+	if (ttlMap.find(key) != ttlMap.end())
+	{
+		if (now >= ttlMap[key])
+		{
+			lists.erase(key);
+			ttlMap.erase(key);
+		}
+	}
+}
 void ListsManager::pushFront(const std::string& key, const std::string& value)
 {
 	if (lists.find(key) == lists.end())
@@ -35,13 +48,22 @@ void ListsManager::popBack(const std::string& key)
 	lists[key]->pop_back();
 }
 
+void ListsManager::setTtl(const std::string& key, int ttl)
+{
+	auto now = std::chrono::steady_clock::now();
+	ttlMap[key] = now + std::chrono::seconds(ttl);
+
+}
+
 std::string ListsManager::getRange(const std::string& key, int start, int end)
-{	
+{
+	ttlCheck(key);
 	std::string result;
-	if (start > end)
-	{
+	if (start > end || !lists.count(key))
+	{	
 		return result;
 	}
+	
 	auto it = lists[key]->begin();
 	int i = 1;
 	while (it != lists[key]->end() && i < start)
@@ -56,4 +78,14 @@ std::string ListsManager::getRange(const std::string& key, int start, int end)
 		i++;
 	}
 	return result;
+}
+
+int ListsManager::getSize(const std::string& key)
+{
+	return lists[key]->size();
+}
+
+bool ListsManager::exists(const std::string& key)
+{
+	return lists.count(key);
 }

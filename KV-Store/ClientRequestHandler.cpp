@@ -57,3 +57,13 @@ void ClientRequestHandler::sendToClientSync(std::string message)
 	currentSession.sendToClientSync(message);
 }
 
+int ClientRequestHandler::getSessionId() const
+{
+	return sessionId;
+}
+
+void ClientRequestHandler::killSession()
+{
+	currentSession.killSession();
+}
+

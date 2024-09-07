@@ -1,5 +1,6 @@
 #include "SessionManager.hpp"
 #include<random>
+#include  <iostream>
 void SessionManager::addSession(std::unique_ptr<boost::asio::ip::tcp::socket> socketptr)
 {
 	std::random_device rd;
@@ -10,13 +11,27 @@ void SessionManager::addSession(std::unique_ptr<boost::asio::ip::tcp::socket> so
 		randomInt = distr(eng);
 
 	} while (usedSessionId.find(randomInt) != usedSessionId.end());
-	sessions[randomInt] = std::make_unique<Session>(std::move(socketptr),randomInt);
+	usedSessionId.insert(randomInt);
+	sessions[randomInt] = std::make_unique<Session>(std::move(socketptr),randomInt,*this);
+	std::cout << "Concurrent connections: " <<(int) usedSessionId.size() << std::endl;
 
 }
 
 void SessionManager::removeSession(int sessionId)
 {
+	
 	usedSessionId.erase(sessionId);
 	sessions.erase(sessionId);
+	std::cout << "Concurrent connections: " << (int)usedSessionId.size() << std::endl;
 
 }
+
+void SessionManager::removeAll()
+{
+	while (!usedSessionId.empty())
+	{	
+		removeSession(*usedSessionId.begin());
+
+	}
+}
+

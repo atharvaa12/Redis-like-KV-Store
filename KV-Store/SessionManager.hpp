@@ -13,7 +13,9 @@ private:
 public:
 	void addSession(std::unique_ptr<boost::asio::ip::tcp::socket> socketptr);
 	void removeSession(int sessionId);
-	friend  void ClientRequestHandler::handleRequest(const std::string& message);
+	void removeAll();
+
+	
 
 
 
