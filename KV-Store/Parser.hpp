@@ -94,11 +94,23 @@ struct Parser {
 			if (tokens.size() < 3) {
 				handler.sendToClient("Invalid number of arguments");
 			}
-			else {
+			else if (tokens.size() == 3) {
 				GlobalHashMap::set(tokens[1], tokens[2]);
 				handler.sendToClient("Key set successfully");
 			}
+			else if (tokens.size() == 4) {
+				if (isInt(tokens[3]))
+				{
+					GlobalHashMap::set(tokens[1], tokens[2], std::stoi(tokens[3]));
+					handler.sendToClient("Key set successfully");
+				}
+				else
+				{
+					handler.sendToClient("Invalid arguments: TTL must be a 32 bit number");
+				}
+			}
 			};
+			
 		commands["q"] = [](ClientRequestHandler& handler, const std::vector<std::string>& tokens) {
 			
 			
@@ -147,11 +159,17 @@ struct Parser {
 			};
 		commands["get-range"] = [](ClientRequestHandler& handler, const std::vector<std::string>& tokens) {
 			if (tokens.size() < 4) {
+				std::cout << "inside get-range" << std::endl;
 				handler.sendToClient("Invalid number of arguments");
 			}
-			if (!isInt(tokens[2]) || !isInt(tokens[3]))
+			
+			else if (!isInt(tokens[2]) || !isInt(tokens[3]))
 			{
 				handler.sendToClient("Invalid arguments: Range must be a 32 bit number");
+			}
+			else if (!ListsManager::exists(tokens[1]))
+			{
+				handler.sendToClient("Key does not exist");
 			}
 			else {
 				handler.sendToClient(ListsManager::getRange(tokens[1], std::stoi(tokens[2]), std::stoi(tokens[3])));
@@ -185,6 +203,26 @@ struct Parser {
 				handler.sendToClient(result);
 				
 			}
+			};
+		commands["set-ttl-list"] = [](ClientRequestHandler& handler, const std::vector<std::string>& tokens) {
+			if (tokens.size() < 3) {
+				handler.sendToClient("Invalid number of arguments");
+			}
+			else if (!isInt(tokens[2]))
+			{
+				handler.sendToClient("Invalid arguments: TTL must be a 32 bit number");
+			}
+			else if (!ListsManager::exists(tokens[1]))
+			{
+				handler.sendToClient("Key does not exist");
+			}
+			
+			
+			else {
+				ListsManager::setTtl(tokens[1], std::stoi(tokens[2]));
+				handler.sendToClient("TTL set successfully");
+			}
+
 			};
 		
 

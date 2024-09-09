@@ -50,6 +50,8 @@ void Server::handleConsoleInput()
 void Server::stop() {
 	
 	sessionManager.removeAll();
+	acceptor.cancel();
+	acceptor.close();
 	serverIOContext.stop();
 	//serverIOContext.reset();
 	

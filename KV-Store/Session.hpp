@@ -19,10 +19,10 @@ public:
 
 	};
 	void killSession();
-	void sendToClient(std::string message);
+	void sendToClient(const std::string message);
 	void getLineFromClient();
-	
-	void sendToClientSync(std::string message);
+	void closeSession();
+	void sendToClientSync(const std::string message);
 
 
 

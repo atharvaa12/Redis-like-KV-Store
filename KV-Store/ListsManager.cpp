@@ -18,16 +18,18 @@ void ListsManager::pushFront(const std::string& key, const std::string& value)
 	if (lists.find(key) == lists.end())
 	{
 		lists[key] = std::make_unique<std::list<std::string>>();
-		lists[key]->push_front(value);
+		
 	}
-	lists[key]->push_front(value);
+	
+		lists[key]->push_front(value);
+	
 }
 void ListsManager::pushBack(const std::string& key, const std::string& value)
 {
 	if (lists.find(key) == lists.end())
 	{
 		lists[key] = std::make_unique<std::list<std::string>>();
-		lists[key]->push_back(value);
+		
 	}
 	lists[key]->push_back(value);
 }
@@ -35,17 +37,27 @@ void ListsManager::popFront(const std::string& key)
 {
 	if (lists.find(key) == lists.end())
 	{
+		
 		return;
 	}
 	lists[key]->pop_front();
+	if (lists[key]->empty())
+	{
+		lists.erase(key);
+	}
 }
 void ListsManager::popBack(const std::string& key)
 {
 	if (lists.find(key) == lists.end())
 	{
+		
 		return;
 	}
 	lists[key]->pop_back();
+	if (lists[key]->empty())
+	{
+		lists.erase(key);
+	}
 }
 
 void ListsManager::setTtl(const std::string& key, int ttl)
@@ -57,7 +69,7 @@ void ListsManager::setTtl(const std::string& key, int ttl)
 
 std::string ListsManager::getRange(const std::string& key, int start, int end)
 {
-	ttlCheck(key);
+	
 	std::string result;
 	if (start > end || !lists.count(key))
 	{	
@@ -87,5 +99,6 @@ int ListsManager::getSize(const std::string& key)
 
 bool ListsManager::exists(const std::string& key)
 {
+	ttlCheck(key);
 	return lists.count(key);
 }

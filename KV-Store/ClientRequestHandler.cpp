@@ -43,8 +43,11 @@ void ClientRequestHandler::handleRequest(const std::string& message)
 		sendToClient("Invalid command");
 		return;
 	}
+	
 	else {
+		//std::cout << "calling parser function" << std::endl;
 		Parser::commands[tokens[0]](*this, tokens);
+		//currentSession.getLineFromClient();
 
 
 

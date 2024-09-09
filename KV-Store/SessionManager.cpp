@@ -19,7 +19,7 @@ void SessionManager::addSession(std::unique_ptr<boost::asio::ip::tcp::socket> so
 
 void SessionManager::removeSession(int sessionId)
 {
-	
+	sessions[sessionId]->closeSession();
 	usedSessionId.erase(sessionId);
 	sessions.erase(sessionId);
 	std::cout << "Concurrent connections: " << (int)usedSessionId.size() << std::endl;
