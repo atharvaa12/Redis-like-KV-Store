@@ -7,7 +7,9 @@
 #include <iostream>
 #include "ListsManager.hpp"
 #include "SessionManager.hpp"
+#include "LogQueue.hpp"
 struct Parser {
+	LogQueue* logQueuePtr;
 	static std::unordered_map<std::string, std::function<void(ClientRequestHandler&, const std::vector<std::string>&)>> commands;
 	static bool isInt(const std::string& s) {
 		if (s.empty()) return false;
@@ -37,7 +39,12 @@ struct Parser {
 
 
 	}
-	Parser() {
+	static bool isValidVal(const std::string& s) {
+		return (s.size() >= 2 && s.front() == '"' && s.back() == '"');
+	}
+	Parser(LogQueue * lq) {
+		logQueuePtr = lq;
+		
 		commands["get"] = [](ClientRequestHandler& handler, const std::vector<std::string>& tokens) {
 			if (tokens.size() <2) {
 				handler.sendToClient("Invalid number of arguments");
@@ -60,7 +67,9 @@ struct Parser {
 		commands["exists"] = [](ClientRequestHandler& handler, const std::vector<std::string>& tokens) {
 			if (tokens.size() <2) {
 				handler.sendToClient("Invalid number of arguments");
+				
 			}
+			
 			else {
 				if (GlobalHashMap::exists(tokens[1]))
 				{
@@ -90,24 +99,42 @@ struct Parser {
 
 			}
 			};
-		commands["set"] = [](ClientRequestHandler& handler, const std::vector<std::string>& tokens) {
+		commands["set"] = [this](ClientRequestHandler& handler, const std::vector<std::string>& tokens) {
 			if (tokens.size() < 3) {
 				handler.sendToClient("Invalid number of arguments");
+				return;
 			}
-			else if (tokens.size() == 3) {
-				GlobalHashMap::set(tokens[1], tokens[2]);
+			else if (!isValidVal(tokens[2]))
+			{
+				handler.sendToClient("Invalid arguments: Value must be inclosed within double quotes");
+				return;
+			}
+			std::string val = tokens[2].substr(1, tokens[2].size() - 2);
+			std::string log;
+			if (tokens.size() == 3) {
+				GlobalHashMap::set(tokens[1], val);
+				for (int i = 0; i < 3; i++)
+				{
+					log += tokens[i];
+					log += " ";
+				}
+				logQueuePtr->push(log);
 				handler.sendToClient("Key set successfully");
 			}
+			
 			else if (tokens.size() == 4) {
 				if (isInt(tokens[3]))
 				{
-					GlobalHashMap::set(tokens[1], tokens[2], std::stoi(tokens[3]));
+					GlobalHashMap::set(tokens[1], val, std::stoi(tokens[3]));
 					handler.sendToClient("Key set successfully");
 				}
 				else
 				{
 					handler.sendToClient("Invalid arguments: TTL must be a 32 bit number");
 				}
+			}
+			else {
+				handler.sendToClient("extra arguments provided");
 			}
 			};
 			
@@ -120,21 +147,33 @@ struct Parser {
 		commands["lpush"] = [](ClientRequestHandler& handler, const std::vector<std::string>& tokens) {
 			if (tokens.size() < 3) {
 				handler.sendToClient("Invalid number of arguments");
+				return;
 			}
-			else {
-				ListsManager::pushFront(tokens[1], tokens[2]);
+			else if (!isValidVal(tokens[2]))
+			{
+				handler.sendToClient("Invalid arguments: Value must be inclosed within double quotes");
+				return;
+			}
+			std::string val = tokens[2].substr(1, tokens[2].size() - 2);
+			
+				ListsManager::pushFront(tokens[1], val);
 				handler.sendToClient("Value pushed successfully");
-			}
+			
 
 			};
 		commands["rpush"] = [](ClientRequestHandler& handler, const std::vector<std::string>& tokens) {
 			if (tokens.size() < 3) {
 				handler.sendToClient("Invalid number of arguments");
+				return;
 			}
-			else {
-				ListsManager::pushBack(tokens[1], tokens[2]);
+			else if (!isValidVal(tokens[2])) {
+				handler.sendToClient("Invalid arguments: Value must be inclosed within double quotes");
+				return;
+			}
+			std::string val = tokens[2].substr(1, tokens[2].size() - 2);
+				ListsManager::pushBack(tokens[1], val);
 				handler.sendToClient("Value pushed successfully");
-			}
+			
 
 			};
 		commands["lpop"] = [](ClientRequestHandler& handler, const std::vector<std::string>& tokens) {

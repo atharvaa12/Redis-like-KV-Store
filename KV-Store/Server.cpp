@@ -50,6 +50,7 @@ void Server::handleConsoleInput()
 void Server::stop() {
 	
 	sessionManager.removeAll();
+	logQueuePtr->push("q");
 	acceptor.cancel();
 	acceptor.close();
 	serverIOContext.stop();

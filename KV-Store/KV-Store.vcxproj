@@ -130,6 +130,7 @@
     <ClInclude Include="ClientRequestHandler.hpp" />
     <ClInclude Include="globalHashMap.hpp" />
     <ClInclude Include="ListsManager.hpp" />
+    <ClInclude Include="LogQueue.hpp" />
     <ClInclude Include="Parser.hpp" />
     <ClInclude Include="Session.hpp" />
     <ClInclude Include="Server.hpp" />
@@ -139,6 +140,7 @@
     <ClCompile Include="ClientRequestHandler.cpp" />
     <ClCompile Include="globalHashMap.cpp" />
     <ClCompile Include="ListsManager.cpp" />
+    <ClCompile Include="LogQueue.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Server.cpp" />
     <ClCompile Include="Session.cpp" />

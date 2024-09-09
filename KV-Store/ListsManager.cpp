@@ -94,6 +94,10 @@ std::string ListsManager::getRange(const std::string& key, int start, int end)
 
 int ListsManager::getSize(const std::string& key)
 {
+	if (!lists.count(key))
+	{
+		return 0;
+	}
 	return lists[key]->size();
 }
 
