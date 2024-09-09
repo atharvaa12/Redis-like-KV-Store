@@ -82,7 +82,7 @@ struct Parser {
 
 			}
 			};
-		commands["del"] = [](ClientRequestHandler& handler, const std::vector<std::string>& tokens) {
+		commands["del"] = [this](ClientRequestHandler& handler, const std::vector<std::string>& tokens) {
 			if (tokens.size() < 2) {
 				handler.sendToClient("Invalid number of arguments");
 			}
@@ -94,6 +94,12 @@ struct Parser {
 				else
 				{
 					GlobalHashMap::del(tokens[1]);
+					std::string log;
+					for (int i = 0; i < 2; i++) {
+						log += tokens[i];
+						log += " ";
+					}
+					logQueuePtr->push(log);
 					handler.sendToClient("Key deleted successfully");
 				}
 
@@ -126,6 +132,12 @@ struct Parser {
 				if (isInt(tokens[3]))
 				{
 					GlobalHashMap::set(tokens[1], val, std::stoi(tokens[3]));
+					for (int i = 0; i < 4; i++)
+					{
+						log += tokens[i];
+						log += " ";
+					}
+					logQueuePtr->push(log);
 					handler.sendToClient("Key set successfully");
 				}
 				else
@@ -144,7 +156,7 @@ struct Parser {
 			handler.killSession();
 			
 			};
-		commands["lpush"] = [](ClientRequestHandler& handler, const std::vector<std::string>& tokens) {
+		commands["lpush"] = [this](ClientRequestHandler& handler, const std::vector<std::string>& tokens) {
 			if (tokens.size() < 3) {
 				handler.sendToClient("Invalid number of arguments");
 				return;
@@ -157,11 +169,17 @@ struct Parser {
 			std::string val = tokens[2].substr(1, tokens[2].size() - 2);
 			
 				ListsManager::pushFront(tokens[1], val);
+				std::string log;
+				for (int i = 0; i < 3; i++) {
+					log += tokens[i];
+					log += " ";
+				}
+				logQueuePtr->push(log);
 				handler.sendToClient("Value pushed successfully");
 			
 
 			};
-		commands["rpush"] = [](ClientRequestHandler& handler, const std::vector<std::string>& tokens) {
+		commands["rpush"] = [this](ClientRequestHandler& handler, const std::vector<std::string>& tokens) {
 			if (tokens.size() < 3) {
 				handler.sendToClient("Invalid number of arguments");
 				return;
@@ -172,26 +190,45 @@ struct Parser {
 			}
 			std::string val = tokens[2].substr(1, tokens[2].size() - 2);
 				ListsManager::pushBack(tokens[1], val);
+				std::string log;
+				for (int i = 0; i < 3; i++) {
+					log += tokens[i];
+					log += " ";
+				}
+				logQueuePtr->push(log);
 				handler.sendToClient("Value pushed successfully");
 			
 
 			};
-		commands["lpop"] = [](ClientRequestHandler& handler, const std::vector<std::string>& tokens) {
+		commands["lpop"] = [this](ClientRequestHandler& handler, const std::vector<std::string>& tokens) {
 			if (tokens.size() < 2) {
 				handler.sendToClient("Invalid number of arguments");
 			}
 			else {
 				ListsManager::popFront(tokens[1]);
+				std::string log;
+				for (int i = 0; i < 2; i++) {
+					log += tokens[i];
+					log += " ";
+				}
+				logQueuePtr->push(log);
 				handler.sendToClient("Value popped successfully");
 			}
 
 			};
-		commands["rpop"] = [](ClientRequestHandler& handler, const std::vector<std::string>& tokens) {
+		commands["rpop"] = [this](ClientRequestHandler& handler, const std::vector<std::string>& tokens) {
 			if (tokens.size() < 2) {
 				handler.sendToClient("Invalid number of arguments");
 			}
 			else {
 				ListsManager::popBack(tokens[1]);
+				std::string log;
+				for (int i = 0; i < 2; i++)
+				{
+					log += tokens[i];
+					log += " ";
+				}
+				logQueuePtr->push(log);
 				handler.sendToClient("Value popped successfully");
 			}
 
@@ -243,7 +280,7 @@ struct Parser {
 				
 			}
 			};
-		commands["set-ttl-list"] = [](ClientRequestHandler& handler, const std::vector<std::string>& tokens) {
+		commands["set-ttl-list"] = [this](ClientRequestHandler& handler, const std::vector<std::string>& tokens) {
 			if (tokens.size() < 3) {
 				handler.sendToClient("Invalid number of arguments");
 			}
@@ -259,6 +296,12 @@ struct Parser {
 			
 			else {
 				ListsManager::setTtl(tokens[1], std::stoi(tokens[2]));
+				std::string log;
+				for (int i = 0; i < 3; i++) {
+					log += tokens[i];
+					log += " ";
+				}
+				logQueuePtr->push(log);
 				handler.sendToClient("TTL set successfully");
 			}
 
