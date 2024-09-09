@@ -40,9 +40,6 @@ This project is a high-performance key-value store inspired by Redis, developed 
 
    Execute the compiled binary to start the server on port 1234:
 
-   ```bash
-   ./redis-like-kv-store
-   ```
 
 2. **Connect to the Server**
 
