@@ -26,7 +26,7 @@ This project is a high-performance key-value store inspired by Redis, developed 
 1. **Clone the Repository**
 
    ```bash
-   git clone https://github.com/yourusername/redis-like-kv-store.git
+   git clone https://github.com/atharvaa12/Redis-like-KV-Store.git
    cd redis-like-kv-store
    ```
 
